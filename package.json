@@ -1,0 +1,16 @@
+{
+  "name": "msgsync",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "rsbuild dev --open",
+    "build": "rsbuild build",
+    "preview": "rsbuild preview"
+  },
+  "dependencies": {
+    "webdav": "^5.5.0"
+  },
+  "devDependencies": {
+    "@rsbuild/core": "^1.0.19"
+  }
+}

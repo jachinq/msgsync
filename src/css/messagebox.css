@@ -1,0 +1,17 @@
+.message-box {
+    /* display: none; */
+    position: fixed;
+    top: 3rem;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    padding: 0.68rem 1rem;
+    border-radius: 4px;
+    background-color: rgb(96, 136, 96);
+    /* border: 1px solid #ddd; */
+    z-index: 1000;
+}
+
+.message-box.error {
+    background-color: rgb(158, 77, 77);
+}
