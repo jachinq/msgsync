@@ -48,7 +48,7 @@ connectBtn.addEventListener('click', async () => {
             // alert('连接成功');
             messageBox.show({ type: 'info', message: '连接成功' })
         } else {
-            messageBox.show({ type: 'info', message: '连接失败' })
+            messageBox.show({ type: 'error', message: '连接失败' })
         }
     } catch (error) {
         console.error(error);
