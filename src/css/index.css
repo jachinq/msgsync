@@ -74,6 +74,21 @@
   width: var(--card-width);
 }
 
-.card-content-span {
+.break-words {
   word-break: break-all;
+}
+.break-words a {
+  color: #fff;
+}
+.code-block {
+  background-color: #282a36;
+  color: #fff;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  margin: 1rem 0;
+  border: 1px solid #414758;
+}
+.img-tag {
+  max-width: calc(var(--card-width) - 2rem);
 }

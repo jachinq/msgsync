@@ -50,6 +50,10 @@ Preview the production build locally:
 pnpm preview
 ```
 
+## Changelog
+
+- Optimize the information display style and support the recognition of pictures and links 
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

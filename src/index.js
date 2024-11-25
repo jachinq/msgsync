@@ -40,7 +40,7 @@ const createCardHeader = ({ date = '', content = '' }) => {
 
   const optDiv = document.createElement('div');
   optDiv.classList.add('card-opt');
-  
+
   // del btn
   const delBtn = document.createElement('button');
   delBtn.id = `del-btn${Math.floor(Math.random() * 1000000)}`;
@@ -88,21 +88,85 @@ const createCardHeader = ({ date = '', content = '' }) => {
   return header;
 };
 // 生成卡片内容
-const createCardContent = ({ date = '', content = '' }) => {
-  const card = document.createElement('div');
-  card.classList.add('card');
+const createCardContent = ({ content = '' }) => {
+  // 通过正则匹配出 content 中的链接, 将其替换为 a 标签
   const contentDiv = document.createElement('div');
   contentDiv.classList.add('card-content');
-  const contentSpan = document.createElement('span');
-  contentSpan.classList.add('card-content-span');
-  contentSpan.textContent = content;
-  contentDiv.appendChild(contentSpan);
+  contentDiv.classList.add('break-words');
 
-  card.appendChild(createCardHeader({ date, content }));
+  contentDiv.textContent = content;
 
-  card.appendChild(contentDiv);
-  return card;
+  const links = content.match(/https?:\/\/[^\s]+/g);
+  const imgs = content.match(/!\[[^\]]*\]\(([^\)]+)\)/g);
+
+  if (links && links.length > 0) {
+    links.forEach(link => {
+      // console.log(imgs, link);
+      if (imgs) {
+        imgs.forEach(img => { // 处理图片链接
+          if (img.includes(link)) {
+            console.log('ignore img link', link);
+            return;
+          }
+        });
+        console.log('ignore img link', link);
+        return;
+      }
+      const a = document.createElement('a');
+      a.href = link;
+      a.target = '_blank';
+      a.textContent = link;
+      contentDiv.innerHTML = contentDiv.innerHTML.replace(link, a.outerHTML);
+    });
+  }
+
+  // 检测代码块
+  const codeBlocks = content.match(/```[\s\S]*?```/g);
+  if (codeBlocks && codeBlocks.length > 0) {
+    codeBlocks.forEach(codeBlock => {
+      console.log(codeBlock);
+      const pre = document.createElement('div');
+      pre.classList.add('code-block');
+      // codeBlock 按行处理
+      const lines = codeBlock.split('\n');
+      lines.forEach(line => {
+        if (line.startsWith('```')) {
+          return;
+        }
+        if (line.trim().length === 0) {
+          return;
+        }
+        const code = document.createElement('div');
+        code.textContent = line;
+        pre.appendChild(code);
+      });
+      // pre.textContent = codeBlock;
+      contentDiv.innerHTML = contentDiv.innerHTML.replace(codeBlock, pre.outerHTML);
+    });
+  }
+
+  
+  // 把所有的换行符替换为 <br>
+  contentDiv.innerHTML = contentDiv.innerHTML.replace(/\n/g, '<br>');
+
+  // 检测图片链接
+  if (imgs && imgs.length > 0) {
+    imgs.forEach(img => {
+      console.log(img);
+      const imgDiv = document.createElement('div');
+      imgDiv.classList.add('img-block');
+      const imgTag = document.createElement('img');
+      imgTag.classList.add('img-tag');
+      const imgUrl = img.match(/\(([^\)]+)\)/)[1];
+      imgTag.src = imgUrl;
+      imgDiv.appendChild(imgTag);
+      contentDiv.innerHTML = contentDiv.innerHTML.replace(img, imgDiv.outerHTML);
+    });
+  }
+
+  return contentDiv;
 }
+
 // 根据数据list渲染卡片
 const renderCards = (cards) => {
   if (cards.length === 0) {
@@ -115,8 +179,17 @@ const renderCards = (cards) => {
   cardsClone.reverse();
   // Render cards
   cardsClone.forEach(data => {
-    // root.appendChild(createCardHeader(data));
-    root.appendChild(createCardContent(data));
+    const card = document.createElement('div');
+    card.classList.add('card');
+    // const contentDiv = document.createElement('div');
+    // contentDiv.classList.add('card-content');
+    // contentDiv.classList.add('break-words');
+    // contentDiv.appendChild(createCardContent(data));
+
+    card.appendChild(createCardHeader(data));
+    card.appendChild(createCardContent(data));
+    
+    root.appendChild(card);
   });
 }
 // 从webdav服务器获取数据
@@ -128,7 +201,7 @@ const getData = async (page, num) => {
   if (client) {
     datas = await webdavutils.readData(client);
   }
-  console.log(datas);
+  // console.log(datas);
   if (datas == null) {
     return [];
   }
@@ -141,6 +214,13 @@ const refreshData = async () => {
   const num = 100;
   const cards = await getData(page, num);
   renderCards(cards);
+  Array.from(document.getElementsByClassName("img-tag")).forEach(function(img) {
+    img.addEventListener('click', () => {
+      const imgUrl = img.src;
+      window.open(imgUrl, '_blank');
+      console.log('open img', imgUrl);
+    });
+  });
 }
 
 sendBtn.addEventListener('click', async () => {
@@ -176,3 +256,11 @@ sendBtn.addEventListener('click', async () => {
 refreshData();
 
 
+window.onload = function() {
+
+  var link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.type = 'text/css';
+  link.href = 'https://chinese-fonts-cdn.deno.dev/packages/lywkpmydb/dist/LXGWWenKaiScreen/result.css';
+  document.head.appendChild(link);
+};
