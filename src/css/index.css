@@ -1,5 +1,12 @@
 :root {
-  --card-width: 360px;
+  --card-width: 800px;
+}
+
+/* 根据屏幕大小控制 --card-width */
+@media screen and (max-width: 864px) {
+  :root {
+    --card-width: calc(100% - 2rem);
+  }
 }
 
 .config-link {

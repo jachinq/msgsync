@@ -16,6 +16,18 @@ body {
     box-sizing: border-box;
 }
 
+/* 在这里处理 hover 效果，避免触摸屏上出现点击后 hover 样式保留 */
+@media (hover:hover) {
+    button:hover {
+        background-color: #293a5a;
+        color: #fff;
+    }
+    button:active {
+        background-color: #020917;
+        color: #fff;
+    }
+}
+
 button {
     background-color: #555d72;
     border: none;
@@ -28,15 +40,16 @@ button {
     animation: all 0.3s ease-in-out;
 }
 
-button:hover {
+/* button:hover {
     background-color: #293a5a;
     color: #fff;
-}
+} */
 
-button:active {
+/** 按钮按下样式 */
+/* button:active {
     background-color: #020917;
     color: #fff;
-}
+} */
 
 .content {
     display: flex;
@@ -65,6 +78,7 @@ button:active {
     text-decoration: none;
     font-weight: 700;
 }
+
 .title:hover {
     cursor: pointer;
 }
