@@ -3,6 +3,7 @@ import './css/comm.css';
 import webdavutils from './webdavutils';
 import cookie from './cookie'
 import messageBox from './messageBox';
+import GotifyConfig from "./gotify";
 
 const { getCookie } = cookie;
 
@@ -246,7 +247,12 @@ sendBtn.addEventListener('click', async () => {
   refreshData();
   textMsg.value = '';
   if (result) {
-    messageBox.show({ type: 'info', message: '发送成功' })
+    messageBox.show({ type: 'info', message: '发送成功' });
+    const gotifyConfig = new GotifyConfig();
+    const ok = await new GotifyConfig().sendMsg({date, content});
+    if (gotifyConfig.getToken() && gotifyConfig.getUrl() && ok !== true) {
+      messageBox.show({ type: 'error', message: '推送到 gotify 失败' })
+    }
   } else {
     messageBox.show({ type: 'error', message: '发送失败' })
   }
@@ -254,7 +260,6 @@ sendBtn.addEventListener('click', async () => {
 });
 
 refreshData();
-
 
 window.onload = function() {
 

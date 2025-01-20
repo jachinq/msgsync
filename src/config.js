@@ -3,6 +3,7 @@ import "./css/config.css";
 import webdavutils from './webdavutils';
 import messageBox from './messageBox';
 import cookie from './cookie'
+import GotifyConfig from "./gotify";
 
 
 const { getCookie, setCookie } = cookie;
@@ -81,3 +82,27 @@ if (webdavUsername) {
 if (webdavPassword) {
     document.querySelector('#secret').value = webdavPassword;
 }
+
+
+const gotifyConfig = new GotifyConfig();
+if (gotifyConfig.url) {
+    document.querySelector('#gotify-server').value = gotifyConfig.url;
+}
+if (gotifyConfig.token) {
+    document.querySelector('#gotify-token').value = gotifyConfig.token;
+}
+document.querySelector('#gotify-save')?.addEventListener('click', () => {
+    const url = document.querySelector('#gotify-server').value;
+    const token = document.querySelector('#gotify-token').value;
+    if (url == null || url == undefined || url.trim() == '') {
+        messageBox.show({ type: 'error', message: '请填写 Gotify 服务器地址' })
+        return;
+    }
+    if (token == null || token == undefined || token.trim() == '') {
+        messageBox.show({ type: 'error', message: '请填写 Gotify 令牌' })
+        return;
+    }
+    gotifyConfig.setUrl(url);
+    gotifyConfig.setToken(token);
+    messageBox.show({ type: 'info', message: '保存成功' })
+});

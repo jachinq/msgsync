@@ -2,41 +2,50 @@
 <html lang="zh-CN">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <link rel="stylesheet" href="./comm.css"> -->
-    <!-- <link rel="stylesheet" href="./config.css"> -->
-    <title>Msg Push</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Msg Push</title>
 </head>
 
 <body>
-    <div class="content">
-        <a class="title" id="title" href="/">Msg Sync</a>
-        <p class="desc">一个简单的消息推送系统</p>
-        <div>
-            <!-- <form action="save"> -->
-            <div class="formitem">
-                <label for="server">服务器地址</label>
-                <textarea id="server" rows="3" name="server" placeholder="http://xxxx/dav/webdav/msgpush"></textarea>
-            </div>
-            <div class="formitem">
-                <label for="user">用户</label>
-                <input type="text" id="user" name="user" value="">
-            </div>
-            <div class="formitem">
-                <label for="secret">密码</label>
-                <input type="password" id="secret" name="secret" value="">
-            </div>
-            <div class="formitem">
-                <button id="config-connect">测试连接</button>
-            </div>
-            <div class="formitem">
-                <button id="config-save">保存</button>
-            </div>
-            <!-- </form> -->
-        </div>
+  <div class="content">
+    <a class="title" id="title" href="/">Msg Sync</a>
+    <p class="desc">一个简单的消息推送系统</p>
+    <div class="card">
+      <div class="formitem">
+        <label for="server">Webdav 地址</label>
+        <textarea id="server" rows="3" name="server" placeholder="http://xxxx/dav/webdav/msgpush"></textarea>
+      </div>
+      <div class="formitem">
+        <label for="user">用户</label>
+        <input type="text" id="user" name="user" value="">
+      </div>
+      <div class="formitem">
+        <label for="secret">密码</label>
+        <input type="password" id="secret" name="secret" value="">
+      </div>
+      <div class="formitem">
+        <button id="config-connect">测试连接</button>
+      </div>
+      <div class="formitem">
+        <button id="config-save">保存</button>
+      </div>
     </div>
-    <!-- <script src="./config.js"></script> -->
+
+    <div class="card">
+      <div class="formitem">
+        <label for="server">gotify 推送地址</label>
+        <textarea id="gotify-server" rows="3" name="server" placeholder="http://xxxx/message"></textarea>
+      </div>
+      <div class="formitem">
+        <label for="secret">Token</label>
+        <input type="password" id="gotify-token" name="secret" value="">
+      </div>
+      <div class="formitem">
+        <button id="gotify-save">保存</button>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>
