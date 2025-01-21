@@ -26,6 +26,35 @@
   font-size: 1.2rem;
 }
 
+#msg-container {
+  width: var(--card-width);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes spin {
+  from {
+      transform: rotate(0deg);
+  }
+  to {
+      transform: rotate(360deg);
+  }
+}
+.loading-container {
+  color: gray;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+.loading {
+  /* transform: scale(0.4); */
+  animation: spin 3s linear infinite;
+}
+
 /*form styles*/
 .content textarea {
   /* width: 100%; */

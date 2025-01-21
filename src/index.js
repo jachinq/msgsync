@@ -1,5 +1,6 @@
 import './css/index.css';
 import './css/comm.css';
+import load from './icon/load.svg';
 import Webdav from './webdavutils';
 import messageBox from './messageBox';
 import GotifyConfig from "./gotify";
@@ -13,7 +14,33 @@ window.onload = function () {
   document.head.appendChild(link);
 };
 
-const webdav = new Webdav();
+// 模拟获取数据，耗时3s
+const emulateGetData = () => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve([
+        {
+          "date": "2024/11/16 09:23:11",
+          "content": "test1"
+        },
+        {
+          "date": "2024/11/16 09:24:44",
+          "content": "test2"
+        }
+      ]);
+    }, 3000);
+  });
+}
+// 模拟保存数据，耗时1s
+const emulateSaveData = (data) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(true);
+    }, 1000);
+  });
+}
+
+
 class App {
   constructor() {
     this.init();
@@ -25,12 +52,13 @@ class App {
 
   initEvent() {
     const sendBtn = document.querySelector('#send-btn');
+    this.sendBtn = sendBtn;
     sendBtn.addEventListener('click', this.sendMsg);
   }
 
   sendMsg = async () => {
-    if (this.client == null) {
-      console.log("client is null", client);
+    if (webdav.getClient() == null) {
+      console.log("client is null");
       messageBox.show({ type: 'error', message: '请先配置服务器信息' })
       return;
     }
@@ -46,29 +74,56 @@ class App {
       date,
       content
     }
-    const result = await Webdav.saveData(client, data);
+    const mask = new Mask();
+    mask.show();
+    this.sendBtn.disabled = true;
+    this.sendBtn.innerHTML = 'sending...';
+    let result;
+    if (debug) {
+      result = await emulateSaveData(data);
+    } else {
+      result = await webdav.saveData(data)
+    }
+    mask.hide();
+    this.sendBtn.disabled = false;
+    this.sendBtn.innerHTML = 'send';
     // console.log(result);
-    this.refreshData();
+    render.refreshData();
     textMsg.value = '';
     if (result) {
       messageBox.show({ type: 'info', message: '发送成功' });
-      const gotifyConfig = new GotifyConfig();
-      const ok = await new GotifyConfig().sendMsg({ date, content });
-      if (gotifyConfig.getToken() && gotifyConfig.getUrl() && ok !== true) {
-        messageBox.show({ type: 'error', message: '推送到 gotify 失败' })
-      }
-    } else {
-      messageBox.show({ type: 'error', message: '发送失败' })
+      new GotifyConfig().sendMsg({ date, content });
     }
-
   }
+}
 
+class Render {
+  constructor() {
+    this.msgEl = document.querySelector('#msg-container');
+  }
   // 刷新数据，页面首次打开时调用，以及保存数据时调用
   refreshData = async () => {
     const page = 1;
     const num = 100;
-    const cards = await webdav.getData(page, num);
-    this.renderCards(cards);
+    // const mask = new Mask();
+    // mask.show();
+    this.msgEl.innerHTML = `
+    <div class="loading-container">
+      <img class="loading" src="${load}">
+      <span>加载中...</span>
+    </div>
+    `.trim();
+
+    let cards = [];
+    if (debug) {
+      cards = await emulateGetData();
+    } else {
+      cards = await webdav.getData(page, num);
+    }
+    render.renderCards(cards);
+
+    // mask.hide();
+    // 绑定图片点击事件
     Array.from(document.getElementsByClassName("img-tag")).forEach(function (img) {
       img.addEventListener('click', () => {
         const imgUrl = img.src;
@@ -117,10 +172,10 @@ class App {
       const data = {
         date, content
       }
-      Webdav.deleteData(client, data).then(res => {
+      webdav.deleteData(data).then(res => {
         if (res) {
           messageBox.show({ type: 'info', message: '删除成功' })
-          refreshData();
+          render.refreshData();
         } else {
           messageBox.show({ type: 'error', message: '删除失败' })
         }
@@ -141,6 +196,7 @@ class App {
         el.select();
         document.execCommand('copy');
         document.body.removeChild(el);
+        messageBox.show({ type: 'info', message: '复制成功~' });
       });
     }
     header.appendChild(optDiv);
@@ -165,11 +221,11 @@ class App {
         if (imgs) {
           imgs.forEach(img => { // 处理图片链接
             if (img.includes(link)) {
-              console.log('ignore img link', link);
+              // console.log('ignore img link', link);
               return;
             }
           });
-          console.log('ignore img link', link);
+          // console.log('ignore img link', link);
           return;
         }
         const a = document.createElement('a');
@@ -229,13 +285,13 @@ class App {
 
   // 根据数据list渲染卡片
   renderCards = (cards) => {
-    const root = document.querySelector('#root');
+    const msgContainerEl = this.msgEl;
     if (cards.length === 0) {
-      root.innerHTML = '<div class="no-data">无数据</div>';
+      msgContainerEl.innerHTML = '<div class="no-data">无数据</div>';
       return;
     }
-    // Clear root
-    root.innerHTML = '';
+    // Clear container
+    msgContainerEl.innerHTML = '';
     const cardsClone = [...cards];
     cardsClone.reverse();
     // Render cards
@@ -250,10 +306,32 @@ class App {
       card.appendChild(this.createCardHeader(data));
       card.appendChild(this.createCardContent(data));
 
-      root.appendChild(card);
+      msgContainerEl.appendChild(card);
     });
   }
 }
+class Mask {
+  constructor() {
+    this.init();
+  }
 
-const app = new App();
-app.refreshData();
+  init() {
+    const mask = document.createElement('div');
+    mask.classList.add('mask');
+    this.mask = mask;
+  }
+
+  show() {
+    document.body.appendChild(this.mask);
+  }
+
+  hide() {
+    document.body.removeChild(this.mask);
+  }
+}
+
+new App();
+const webdav = new Webdav();
+const render = new Render();
+const debug = false;
+render.refreshData();

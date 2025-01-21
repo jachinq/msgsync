@@ -28,6 +28,7 @@ body {
     }
 }
 
+
 button {
     background-color: #555d72;
     border: none;
@@ -77,8 +78,21 @@ button {
     /* a 标签去掉下划线; */
     text-decoration: none;
     font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .title:hover {
     cursor: pointer;
+}
+
+.mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+    z-index: 999;
 }

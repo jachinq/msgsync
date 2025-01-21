@@ -116,6 +116,10 @@ class WebDavUtils {
         this.client = buildClient(config);
     }
 
+    getClient() {
+        return this.client;
+    }
+
     async testConnection() {
         return await testConnection(this.client);
     }

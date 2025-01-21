@@ -4,28 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="一个简单的消息推送系统">
     <link rel="icon" type="image/svg+xml" href="icon.svg">
-    <!-- <link rel='stylesheet' href='https://chinese-fonts-cdn.deno.dev/packages/lywkpmydb/dist/LXGWWenKaiScreen/result.css' /> -->
     <title>Msg Sync</title>
 </head>
 
 <body>
     <div class="content">
-        <a class="title" id="title" href="/">Msg Sync</a>
+        <a class="title" id="title" href="/">
+            <img src="icon.svg" alt="" width="32">
+            Msg Sync
+        </a>
         <p class="desc">一个简单的消息推送系统
             <a class="config-link" href="/config.html">配置</a>
         </p>
-        <!-- config -->
-        <!-- <div> -->
-        <!-- <button id="config-connect">connect</button> -->
-        <!-- <button id="config-read">read</button> -->
-        <!-- <button id="config-save">save</button> -->
-        <!-- </div> -->
         <div class="text-msg-input">
             <textarea id="text-msg" placeholder="请输入消息"></textarea>
             <button id="send-btn">send</button>
         </div>
-        <div id="root"></div>
+        <div id="msg-container"></div>
     </div>
 </body>
 

@@ -44,6 +44,12 @@ class GotifyConfig {
           },
           body: JSON.stringify(data),
         });
+        if (!response.ok) {
+          if (this.url && this.token) {
+            messageBox.show({ type: 'error', message: '推送到 gotify 失败' })
+          }
+        }
+        
         return response.ok;
       }
     } catch (error) {
