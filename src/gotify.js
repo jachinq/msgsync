@@ -1,10 +1,18 @@
 import cookie from './cookie'
+import { isLocalhost } from './util';
 const { getCookie, setCookie } = cookie;
 
 class GotifyConfig {
   constructor() {
-    this.url = getCookie('gotifyUrl');
-    this.token = getCookie('gotifyToken');
+    let isLocal = isLocalhost(window.location.href);
+    // console.log("isLocalhost", isLocal);
+    const defaultConfig = {
+        url: isLocal ? '' : '',
+        token: ''
+    };
+    
+    this.url = getCookie('gotifyUrl') || defaultConfig.url;
+    this.token = getCookie('gotifyToken') || defaultConfig.token;
   }
   setUrl(url) {
     this.url = url;

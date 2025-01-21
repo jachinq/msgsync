@@ -4,6 +4,7 @@ import webdavutils from './webdavutils';
 import messageBox from './messageBox';
 import cookie from './cookie'
 import GotifyConfig from "./gotify";
+import { isLocalhost } from "./util";
 
 
 const { getCookie, setCookie } = cookie;
@@ -64,10 +65,19 @@ saveBtn.addEventListener('click', async () => {
     messageBox.show({ type: 'info', message: '保存成功' })
 });
 
+let isLocal = isLocalhost(window.location.href);
+// console.log("isLocalhost", isLocal);
+const defaultConfig = {
+    url: isLocal ? '' : '',
+    user: '',
+    pwd: ''
+};
+
+
 // 从 cookie 中获取配置信息，回填到表单上
-const webdavUrl = getCookie('webdavUrl');
-const webdavUsername = getCookie('webdavUsername');
-const webdavPassword = getCookie('webdavPassword');
+const webdavUrl = getCookie('webdavUrl') || defaultConfig.url;
+const webdavUsername = getCookie('webdavUsername') || defaultConfig.user;
+const webdavPassword = getCookie('webdavPassword') || defaultConfig.pwd;
 // console.log("configData", configData);
 if (webdavUrl) {
     document.querySelector('#server').value = webdavUrl;
