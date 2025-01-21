@@ -1,7 +1,6 @@
 import './css/index.css';
 import './css/comm.css';
-import webdavutils from './webdavutils';
-import cookie from './cookie'
+import Webdav from './webdavutils';
 import messageBox from './messageBox';
 import GotifyConfig from "./gotify";
 
@@ -14,6 +13,7 @@ window.onload = function () {
   document.head.appendChild(link);
 };
 
+const webdav = new Webdav();
 class App {
   constructor() {
     this.init();
@@ -21,17 +21,6 @@ class App {
 
   init() {
     this.initEvent();
-
-    const { getCookie } = cookie;
-
-    // 从 cookie 中获取配置信息
-    const config = {
-      url: getCookie('webdavUrl') || '',
-      user: getCookie('webdavUsername') || '',
-      pwd: getCookie('webdavPassword') || ''
-    };
-    this.client = webdavutils.buildClient(config);
-
   }
 
   initEvent() {
@@ -57,7 +46,7 @@ class App {
       date,
       content
     }
-    const result = await webdavutils.saveData(client, data);
+    const result = await Webdav.saveData(client, data);
     // console.log(result);
     this.refreshData();
     textMsg.value = '';
@@ -74,28 +63,11 @@ class App {
 
   }
 
-  // 从webdav服务器获取数据
-  getData = async (page, num) => {
-    let start = (page - 1) * num;
-    let end = start + num;
-    // Generate 10 cards
-    let datas = [];
-    if (this.client) {
-      datas = await webdavutils.readData(this.client);
-    }
-    // console.log(datas);
-    if (datas == null) {
-      return [];
-    }
-    // return datas.slice(start, end);
-    return datas;
-  }
-
   // 刷新数据，页面首次打开时调用，以及保存数据时调用
   refreshData = async () => {
     const page = 1;
     const num = 100;
-    const cards = await this.getData(page, num);
+    const cards = await webdav.getData(page, num);
     this.renderCards(cards);
     Array.from(document.getElementsByClassName("img-tag")).forEach(function (img) {
       img.addEventListener('click', () => {
@@ -145,7 +117,7 @@ class App {
       const data = {
         date, content
       }
-      webdavutils.deleteData(client, data).then(res => {
+      Webdav.deleteData(client, data).then(res => {
         if (res) {
           messageBox.show({ type: 'info', message: '删除成功' })
           refreshData();
@@ -240,7 +212,7 @@ class App {
     // 检测图片链接
     if (imgs && imgs.length > 0) {
       imgs.forEach(img => {
-        console.log(img);
+        // console.log(img);
         const imgDiv = document.createElement('div');
         imgDiv.classList.add('img-block');
         const imgTag = document.createElement('img');

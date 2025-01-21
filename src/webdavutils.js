@@ -1,8 +1,9 @@
 import { createClient } from "webdav";
+import cookie from './cookie'
 
 const file_path = "/msgpush.json";
 
-const buildClient = ({url, user, pwd}) => {
+const buildClient = ({ url, user, pwd }) => {
     if (url == null || url == undefined || url == "") {
         console.log("url is null or undefined");
         return null;
@@ -55,7 +56,7 @@ const readData = async (client) => {
         if (string == null || string == undefined || string == "") {
             string = "[]";
         }
-        const json = JSON.parse(string);   
+        const json = JSON.parse(string);
         // console.log(json);
         return json;
     }
@@ -85,7 +86,7 @@ const deleteData = async (client, data) => {
         return;
     }
     const datas = await readData(client);
-    
+
     const index = datas.findIndex(item => {
         // console.log('find index', item, data);
         return item.date === data.date && item.content === data.content
@@ -102,10 +103,51 @@ const deleteData = async (client, data) => {
     return ok;
 }
 
-export default {
-    buildClient,
-    testConnection,
-    saveData,
-    deleteData,
-    readData
+const { getCookie } = cookie;
+
+class WebDavUtils {
+    constructor() {
+        // 从 cookie 中获取配置信息
+        const config = {
+            url: getCookie('webdavUrl') || '',
+            user: getCookie('webdavUsername') || '',
+            pwd: getCookie('webdavPassword') || ''
+        };
+        this.client = buildClient(config);
+    }
+
+    async testConnection() {
+        return await testConnection(this.client);
+    }
+
+    async readData() {
+        return await readData(this.client);
+    }
+
+    async saveData(data) {
+        return await saveData(this.client, data);
+    }
+
+    async deleteData(data) {
+        return await deleteData(this.client, data);
+    }
+
+    // 从webdav服务器获取数据
+    getData = async (page, num) => {
+        let start = (page - 1) * num;
+        let end = start + num;
+        // Generate 10 cards
+        let datas = [];
+        if (this.client) {
+            datas = await this.readData(this.client);
+        }
+        // console.log(datas);
+        if (datas == null) {
+            return [];
+        }
+        // return datas.slice(start, end);
+        return datas;
+    }
+
 }
+export default WebDavUtils;

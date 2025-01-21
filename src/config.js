@@ -37,13 +37,9 @@ connectBtn.addEventListener('click', async () => {
     if (!configData) {
         return;
     }
-    const client = webdavutils.buildClient(configData)
-    if (!client) {
-        messageBox.show({ type: 'error', message: '连接失败' })
-        return;
-    }
+    const webdav = new webdavutils();
     try {
-        const result = await webdavutils.testConnection(client);
+        const result = await webdav.testConnection();
         console.log("test connection result", result);
         if (result) {
             // alert('连接成功');
